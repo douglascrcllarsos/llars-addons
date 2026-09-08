@@ -1,4 +1,4 @@
-# Gestor Llars
+# Llars Control
 
 Gestor de instalaciones de aerotermia y clima de Llars Sostenible: lectura y
 escritura de aerotermias Samsung por protocolo NASA, motor de clima por

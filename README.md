@@ -10,6 +10,6 @@ instalar hace falta acceso de lectura a esas imágenes.
    `ha docker registries add ghcr.io --username <usuario> --password <token read:packages>`
 2. Ajustes → Complementos → Tienda → ⋮ → Repositorios → añadir
    `https://github.com/douglascrcllarsos/llars-addons`
-3. Instalar **Gestor Llars** desde la tienda.
+3. Instalar **Llars Control** desde la tienda.
 
 Las actualizaciones llegan por la tienda (`ha addons update`).

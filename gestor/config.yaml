@@ -1,4 +1,4 @@
-name: Gestor Llars
+name: Llars Control
 version: "0.5.2"
 slug: gestor
 image: "ghcr.io/douglascrcllarsos/gestor-{arch}"
@@ -9,7 +9,7 @@ init: false
 ingress: true
 ingress_port: 8099
 panel_icon: mdi:heat-pump
-panel_title: Gestor Llars
+panel_title: Llars Control
 startup: services
 boot: auto
 uart: true
