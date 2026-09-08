@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.5.3 — 2026-09-08
+
+### Arreglado
+- El watchdog ya casa las zonas cuando el nombre del dispositivo en Zigbee2MQTT lleva mayúsculas o espacios («Z1» → `climate.z1`): el casado usa la misma normalización de nombres que Home Assistant y conserva el nombre real del dispositivo para hablarle por MQTT. Antes, una instalación con nombres en mayúscula quedaba con 0 zonas vigiladas.
+
 ## 0.5.2 — 2026-09-08
 
 ### Añadido
