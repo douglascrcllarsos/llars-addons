@@ -1,9 +1,9 @@
 name: Llars Control
 version: "0.5.2"
 slug: gestor
-image: "ghcr.io/douglascrcllarsos/gestor-{arch}"
+image: "ghcr.io/douglascrcllarsos/llars-control-{arch}"
 description: Aerotermia Samsung (NASA), motor de clima y gestión de la instalación
-url: https://github.com/douglascrcllarsos/ha-addon-gestor
+url: https://github.com/douglascrcllarsos/llars-control
 arch: [aarch64, amd64]
 init: false
 ingress: true
