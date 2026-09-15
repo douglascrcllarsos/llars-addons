@@ -5,6 +5,15 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.7.1 — 2026-09-15
+
+### Arreglado
+- La columna «Zona» del watchdog muestra el número real de cada zona (el campo `numero_zona` del YAML, la numeración propia de la instalación) en vez de inventarse una numeración por posición en el fichero.
+- El botón «Reparar emparejamiento» permite relanzar la reparación con el técnico delante del aparato: re-abre una escalera que esperaba su reintento (sin aguardar los 30 min/2 h) o que ya se había rendido, con contador fresco. Solo sigue bloqueado mientras hay órdenes en vuelo.
+- La espera de la re-entrevista sube de 120 a 180 s: medida en instalaciones reales, la ficha nueva tarda ~75-90 s en llegar y el presupuesto antiguo podía declarar un fallo falso con la entrevista aún en marcha.
+- El motor de clima ya no re-afirma los modos hvac al arrancar: cada reinicio o actualización del add-on volvía a encender (en el modo de temporada) las zonas que un usuario había apagado. El cambio real de los selectores de temporada sigue propagándose a todas las zonas, como siempre.
+- Un ciclo manual lanzado justo después de apagar una zona ya no puede re-encenderla: la acción refresca el modo real desde Home Assistant antes de decidir (y su restauración y cura se registran con origen manual, no como automáticas).
+
 ## 0.7.0 — 2026-09-15
 
 ### Añadido
