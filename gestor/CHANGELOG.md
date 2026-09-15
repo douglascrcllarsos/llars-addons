@@ -5,6 +5,43 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.7.0 — 2026-09-15
+
+### Añadido
+- Límites de setpoint para **todos** los termostatos vigilados (no solo W100): el watchdog detecta cualquier consigna fuera de los límites configurados — venga de Home Assistant, de MQTT o de la rueda física del aparato — y la recorta al momento, respetando el paso real del dispositivo. La orden de corrección toca **solo** la temperatura, nunca el modo ni el encendido.
+- Los límites se configuran por modo (calor y frío, cada uno con su mínimo y máximo) para toda la instalación. El límite efectivo es siempre el más estricto entre el global y el de fábrica del propio aparato.
+- Autodetección del setpoint de cada modelo desde los `exposes` de Zigbee2MQTT (nombre de la propiedad, límites de fábrica y paso): sin listas de modelos cableadas a mano. Una zona cuyo termostato no expone setpoint simplemente no se vigila.
+- Cupo silencioso de 3 correcciones por zona y hora (ventana deslizante): si alguien se pelea con el límite o el aparato no obedece, el watchdog deja de insistir hasta la hora siguiente, sin generar avisos de atención — la detección sí queda en el registro para diagnóstico.
+- Columna «Setpoint» en la tabla de zonas (valor en gris con su motivo cuando la zona no se vigila: apagada, sin respuesta, sin expose…) con marca ✂ y detalle de los recortes recientes; grupo de Ajustes «Límites de setpoint» (interruptor y pares calor/frío); filtro y badge «setpoint» en el Registro.
+- Campos nuevos en `/api/watchdog/estado` por zona (`setpoint`, `setpoint_ts`, `setpoint_limites`, `modo_actual`, `ultimo_recorte`), filtro `?tipo=setpoint` en `/registro` y bloque `setpoints` con sus rangos en `/ajustes`. Los recortes aplicados cuentan como intervención de zona; las detecciones sin orden física, no.
+- Guardas de seguridad: nada se evalúa en zonas apagadas, pausadas o sin modo conocido; gracia de 60 s tras cualquier cambio de modo (evita recortar la consigna nueva contra los límites del modo viejo); anti-eco de 30 s tras cada recorte; en modo observación solo se anota, sin órdenes físicas.
+
+### Arreglado
+- Actualizar el add-on ya no puede descartar la configuración afinada de la instalación: un `watchdog.json` escrito por una versión anterior (sin los bloques nuevos) se migra rellenando solo lo que falta, en vez de darse por corrupto entero y caer a los valores por defecto.
+- Los eventos de la sonda de modo W100 salen ahora con su badge «modo» propio en el Registro y el filtro «Modo» aparece en el selector de tipos (la API ya lo soportaba, pero el panel no lo ofrecía).
+
+## 0.6.0 — 2026-09-14
+
+### Añadido
+- Sonda real del modo termostato W100: en vez de fiarse de un toggle a ciegas, el watchdog lee el atributo propietario del W100 (`0xFFF2`) y decide ON/OFF con el contenido real de la respuesta del dispositivo. La sonda **sustituye** al toggle nocturno: la ronda pasa a sondeo + ciclo simétrico (una zona en calor/frío cicla off→modo como hasta ahora; una zona que ya está en OFF recibe un re-envío de «OFF», nunca cambia su estado final) + corrección dirigida, que solo actúa sobre las zonas que la sonda confirma apagadas.
+- Detección de «emparejamiento incompleto» en zonas W100 (dispositivo casado sin el binding que necesita para responder bien) y reparación automática: re-entrevista Z2M + reconfiguración + corrección, con una escalera de reintentos de 3 intentos en 24 h (inmediato, +30 min, +2 h); si los tres fallan, sube un aviso de atención y queda un reintento diario dentro de la ronda nocturna hasta que una reparación entre.
+- Acciones manuales nuevas en Opciones de la tabla de zonas: «Sondear modo real» y «Reparar emparejamiento», por selección múltiple.
+- Columna «Modo» en la tabla de zonas (ON, OFF, desconocido, o «— No es Aqara W100» en zonas sin ese termostato) e insignia «emparejamiento incompleto» junto al alias de las zonas afectadas.
+- Grupo de Ajustes «W100»: gracia tras el arranque/reconexión de una antena antes de sondear, sonda automática al ver «Failed to configure» en el log de Zigbee2MQTT, reparación automática activable/desactivable y timeout de la sonda.
+- Comprobación `sondas_modo` en `/api/watchdog/salud` (9ª del checklist de auto-diagnóstico): degrada si alguna zona W100 lleva más de una hora con `modo_real: off` sin una corrección o reparación en curso — el equivalente anti-fallo-silencioso de un OFF crónico que nadie está corrigiendo.
+- Eventos nuevos en el registro del watchdog (`sonda_modo`, `modo_on`, `reparacion`, con los bytes crudos de cada sonda para diagnóstico) y filtro de tipo «modo» en la vista Registro del panel.
+
+### Arreglado
+- El tooltip ⓘ (ayuda de columna) ya no se recorta al quedar dentro de un contenedor con scroll horizontal de la tabla de zonas: pasa a un globo flotante posicionado fuera del recorte, igual para el de LQI, el de la nueva columna Modo y el de la insignia «emparejamiento incompleto».
+- La ronda nocturna ya no puede quedarse colgada para siempre en una zona cuya corrección de modo no llega a salir (por ejemplo si se apaga el interruptor general del watchdog justo en ese momento): esa espera pasa a tener su propio tope, como el resto de pasos de la ronda. Antes, esa situación dejaba la ronda muerta noche tras noche hasta reiniciar el add-on.
+- La reparación del emparejamiento espera ahora a que Zigbee2MQTT termine de configurar el aparato antes de mandarle el encendido. Antes, la configuración podía pisar ese encendido y la reparación se daba por fallida sobre un aparato que en realidad había quedado bien.
+- La reparación tampoco se rinde ya porque Zigbee2MQTT publique su lista de dispositivos por un motivo ajeno (un aparato distinto que se da de alta, un renombrado…): sigue esperando su turno mientras le quede plazo.
+- La reparación solo se da por buena si la sonda de verificación confirma el encendido **y** el emparejamiento deja de estar incompleto, y esa sonda ya actualiza la columna Modo y el registro (con sus bytes crudos). Antes, tras una reparación correcta la columna Modo seguía marcando «OFF» en rojo y el auto-diagnóstico degradaba en falso una hora después.
+- El latido del watchdog ya no se para mientras el propio watchdog trabaja: una sonda o una reparación largas hacían que el auto-diagnóstico declarase el proceso muerto justo cuando estaba en plena remediación.
+- El botón «Re-entrevistar y configurar» responde de inmediato en vez de dejar la petición abierta durante todo el proceso (que con varios aparatos seleccionados podía superar el tiempo máximo del proxy y acabar en un error engañoso).
+- Las sondas lanzadas a mano quedan registradas como manuales (antes se anotaban como automáticas, así que el filtro por origen del Registro no las encontraba y contaban en el resumen de acciones automáticas de 24 h).
+- Un dispositivo con estructura inesperada en la lista de Zigbee2MQTT ya no puede pasar por «sano» en silencio: el fallo queda contado y trazado en el registro.
+
 ## 0.5.3 — 2026-09-08
 
 ### Arreglado
