@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.7.2 — 2026-09-25
+
+### Arreglado
+- El relleno «sin dato» de NASA (todos los bytes a 0xFF) ya no se decodifica ni se publica. La máquina lo devuelve para un registro que conoce pero no mide (la aerotermia de Camp 64 contesta 0xFFFF a la presión de agua 0x82FE porque no monta sensor) y la unidad interior lo devuelve para cualquier registro de la exterior que se le pida (cada «Forzar lectura» del panel dejaba una ráfaga de «estado 255», «error 65535», «exterior -0.1 °C» y cerraba y reabría el error real en el historial). En HA esos sensores quedan en «desconocido» en vez de mostrar «-0.01 bar». Los ENUM que definen 255 en su tabla (0x4002 «NULL mode», 0x8247 «No defrost»…) siguen aceptándolo como valor.
+
 ## 0.7.1 — 2026-09-15
 
 ### Arreglado
