@@ -18,6 +18,16 @@ def cargar(ruta: str) -> tuple[dict, bool]:
             d = json.load(f)
         if not isinstance(d, dict) or d.get("version") != VERSION or not isinstance(d.get("modulos"), dict):
             raise ValueError("formato desconocido")
+        for mod in d["modulos"].values():
+            if not isinstance(mod, dict) or not isinstance(mod.get("canales"), dict):
+                raise ValueError("formato desconocido")
+            for canal in mod["canales"].values():
+                if not isinstance(canal, dict):
+                    raise ValueError("formato desconocido")
+                for campo in ("pulsos_acum", "ultima_lectura"):
+                    v = canal.get(campo)
+                    if not isinstance(v, int) or isinstance(v, bool):
+                        raise ValueError("formato desconocido")
         return d, False
     except FileNotFoundError:
         return dict(_VACIO, modulos={}), False

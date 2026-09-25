@@ -25,11 +25,11 @@ def test_delta_normal():
 
 def test_reinicio_del_modulo_es_corte():
     # El módulo perdió los contadores (corte de luz) y ha contado 3 desde entonces
-    a = Acumulador({"canales": {"A3": {"pulsos_acum": 618, "ultima_lectura": 618}}})
+    a = Acumulador({"canales": {"A3": {"pulsos_acum": 700, "ultima_lectura": 700}}})
     res = a.aplicar({"A3": 3}, ts=3000)
     assert res["corte"]
     assert res["canales"]["A3"]["delta"] == 3
-    assert a.pulsos("A3") == 621
+    assert a.pulsos("A3") == 703
     assert a.ultimo_corte_ts == 3000
 
 
