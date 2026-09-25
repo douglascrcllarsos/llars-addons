@@ -1,5 +1,5 @@
 name: Llars Contadores
-version: "0.1.0"
+version: "0.1.1"
 slug: contadores
 description: Contadores de agua WJ69-485 por Modbus RTU sobre TCP, con acumulado a prueba de cortes
 url: https://github.com/douglascrcllarsos/llars-addons

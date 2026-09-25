@@ -2,8 +2,11 @@
 puras (testadas); Publicador solo los empuja por aiomqtt.
 
 unique_id deriva de los `id` de config (estables); `nombre` solo pinta.
+object_id fija el entity_id al nombre a secas (sin el prefijo del device
+que HA añade por defecto a las entidades MQTT con dispositivo).
 """
 import json
+import unicodedata
 from datetime import datetime, timezone
 
 from config import Config
@@ -21,6 +24,14 @@ def num_fmt(x: float) -> str:
 
 def _uid(mod_id: str, resto: str) -> str:
     return f"{PREFIJO}_{mod_id}_{resto}".lower()
+
+
+def _slug(texto: str) -> str:
+    """Nombre → object_id: minúsculas, sin acentos, no-alfanumérico a «_»."""
+    plano = unicodedata.normalize("NFD", texto)
+    plano = "".join(ch for ch in plano if not unicodedata.combining(ch))
+    slug = "".join(ch if ch.isalnum() else "_" for ch in plano.lower())
+    return "_".join(p for p in slug.split("_") if p)
 
 
 def _dispositivo(mod) -> dict:
@@ -45,25 +56,32 @@ def mensajes_descubrimiento(cfg: Config) -> list[tuple[str, str]]:
         for c in mod.canales:
             base = f"{PREFIJO}/{mod.id}/{c.id}"
             sensor("sensor", _uid(mod.id, f"{c.id}_litros"), {
-                "name": c.nombre, "state_topic": f"{base}/litros",
+                "name": c.nombre, "object_id": _slug(c.nombre),
+                "state_topic": f"{base}/litros",
                 "device_class": "water", "state_class": "total_increasing",
                 "unit_of_measurement": "L", "device": dev,
             })
             sensor("sensor", _uid(mod.id, f"{c.id}_pulsos"), {
-                "name": f"{c.nombre} pulsos", "state_topic": f"{base}/pulsos",
+                "name": f"{c.nombre} pulsos", "object_id": _slug(f"{c.nombre} pulsos"),
+                "state_topic": f"{base}/pulsos",
                 "state_class": "total_increasing", "icon": "mdi:counter",
                 "entity_category": "diagnostic", "device": dev,
             })
             sensor("sensor", _uid(mod.id, f"{c.id}_caudal"), {
-                "name": f"{c.nombre} caudal", "state_topic": f"{base}/caudal",
+                "name": f"{c.nombre} caudal", "object_id": _slug(f"{c.nombre} caudal"),
+                "state_topic": f"{base}/caudal",
                 "unit_of_measurement": "L/min", "icon": "mdi:water-pump", "device": dev,
             })
+        # Nombre corto en las de módulo: HA ya antepone el nombre del device
+        # en el nombre visible; repetirlo aquí lo doblaba.
         sensor("binary_sensor", _uid(mod.id, "conexion"), {
-            "name": f"{mod.nombre} conexión", "state_topic": f"{PREFIJO}/{mod.id}/conexion",
+            "name": "Conexión", "object_id": _slug(f"{mod.nombre} conexión"),
+            "state_topic": f"{PREFIJO}/{mod.id}/conexion",
             "device_class": "connectivity", "entity_category": "diagnostic", "device": dev,
         })
         sensor("sensor", _uid(mod.id, "ultimo_corte"), {
-            "name": f"{mod.nombre} último corte", "state_topic": f"{PREFIJO}/{mod.id}/ultimo_corte",
+            "name": "Último corte", "object_id": _slug(f"{mod.nombre} último corte"),
+            "state_topic": f"{PREFIJO}/{mod.id}/ultimo_corte",
             "device_class": "timestamp", "entity_category": "diagnostic", "device": dev,
         })
     return mensajes

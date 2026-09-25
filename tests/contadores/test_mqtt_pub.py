@@ -31,6 +31,8 @@ def test_payload_litros():
     topic = "homeassistant/sensor/llars_contadores_sala_a3_litros/config"
     p = json.loads(mensajes[topic])
     assert p["name"] == "Agua fría cocina"
+    # object_id fija el entity_id al nombre a secas, sin prefijo del device
+    assert p["object_id"] == "agua_fria_cocina"
     assert p["unique_id"] == "llars_contadores_sala_a3_litros"
     assert p["state_topic"] == "llars_contadores/sala/A3/litros"
     assert p["availability_topic"] == mqtt_pub.TOPIC_DISPONIBLE
@@ -46,8 +48,18 @@ def test_payload_modulo():
     con = json.loads(mensajes["homeassistant/binary_sensor/llars_contadores_sala_conexion/config"])
     assert con["device_class"] == "connectivity"
     assert con["state_topic"] == "llars_contadores/sala/conexion"
+    # nombre corto (HA antepone el del device); object_id con contexto de módulo
+    assert con["name"] == "Conexión"
+    assert con["object_id"] == "sala_de_contadores_conexion"
     corte = json.loads(mensajes["homeassistant/sensor/llars_contadores_sala_ultimo_corte/config"])
     assert corte["device_class"] == "timestamp"
+    assert corte["name"] == "Último corte"
+    assert corte["object_id"] == "sala_de_contadores_ultimo_corte"
+
+
+def test_slug():
+    assert mqtt_pub._slug("Agua fría apartamento 4") == "agua_fria_apartamento_4"
+    assert mqtt_pub._slug("Conexión  (módulo)") == "conexion_modulo"
 
 
 def test_num_fmt():
