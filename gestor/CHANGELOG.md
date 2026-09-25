@@ -5,6 +5,19 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.7.3 — 2026-09-25
+
+### Cambiado
+- Cada lectura activa va a la unidad dueña del registro: los de la exterior (0x8xxx, identificación 0x06xx) se piden a la exterior en 0x10 y el resto a la placa hidráulica. Antes todo iba a la hidráulica, que rellena con 0xFF lo que no es suyo (origen de los «Error 65535» y la «presión -0,01 bar» de Camp 64).
+- El sondeo rutinario de la hidráulica cubre los diez registros que enseña el panel (consigna de ACS, impulsión, retorno, caudal, potencia y energía térmica, además de sonda de ACS, válvula, bomba y velocidad): tarjetas frescas cada 10 s sin pulsar nada.
+- Los parámetros de límites de usuario y los de la ley de agua (FSV 2041 y curva de calefacción) se leen al conectar y se reintentan solos cada minuto hasta completarse; el gráfico de la ley de agua se repinta solo cuando llegan y ya no pide «Forzar lectura».
+
+### Retirado
+- El botón «Forzar lectura» del panel y `POST /api/forzar-lectura`. «Leer todo de la máquina» pasa a llamarse «Releer parámetros».
+
+### Arreglado
+- Una línea corrupta en la auditoría (reinicio a mitad de escritura) ya no tumba `/api/auditoria` con 500: se salta con aviso en el log.
+
 ## 0.7.2 — 2026-09-25
 
 ### Arreglado
