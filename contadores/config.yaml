@@ -1,0 +1,28 @@
+name: Llars Contadores
+version: "0.1.0"
+slug: contadores
+description: Contadores de agua WJ69-485 por Modbus RTU sobre TCP, con acumulado a prueba de cortes
+url: https://github.com/douglascrcllarsos/llars-addons
+arch: [aarch64, amd64]
+init: false
+startup: services
+boot: auto
+services: ["mqtt:need"]
+# hassio_api: solo para GET /services/mqtt en run.sh (rol por defecto)
+hassio_api: true
+options:
+  modulos: []
+  intervalo_s: 30
+schema:
+  modulos:
+    - id: match(^[a-z0-9_]{1,16}$)
+      nombre: str
+      host: str
+      puerto: port
+      direccion: int(1,247)
+      canales:
+        - id: match(^[AB][0-7]$)
+          nombre: str
+          litros_por_pulso: float
+          offset_litros: float?
+  intervalo_s: int(5,3600)
