@@ -5,6 +5,20 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.8.0 — 2026-09-25
+
+### Añadido
+- Pestaña **Registro** por máquina: protecciones de la exterior (0x8235), averías en pantalla (0x0202), escrituras con su resultado, vida del bus (conexión, reconexión, caída), acciones del panel (lotes, motor de clima) e instalación (arranque con versión y cambios de opciones). Filtros por tipo, búsqueda de texto y número de entradas; misma ergonomía que el registro del watchdog.
+- Entidad «Avería en pantalla» (0x0202) en Home Assistant, junto a «Protección de la exterior» (antes «Código de error», mismo identificador). Hoy la máquina de Camp 64 puede estar en protección 407 sin que la pantalla del cliente muestre nada: ahora se ven las dos cosas.
+- `GET /api/registro?tipo=&q=&n=` y `activos` (protección y avería en curso) en `/api/estado`.
+
+### Cambiado
+- La auditoría antigua se importa al registro en el primer arranque (`audit.jsonl.migrado` queda como copia). El historial de errores antiguo no se importa: estaba lleno de «Error 65535» falsos.
+- Datos por máquina en `/data/maquinas/<id>/`, con `<id>` derivado del alias (preparación de la 0.9.0, varias máquinas). Cambiar el alias en las opciones crea una carpeta nueva: el registro anterior queda en la carpeta del alias antiguo.
+
+### Retirado
+- Pestaña «Auditoría», `GET /api/auditoria` y `GET /api/errores`.
+
 ## 0.7.3 — 2026-09-25
 
 ### Cambiado
