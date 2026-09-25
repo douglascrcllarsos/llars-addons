@@ -66,6 +66,15 @@ async def bucle_modulo(mod, acum, pub, intervalo_s, parada, estado, ruta_estado,
         ahora = time.time()
         lecturas = {c.id: valores[ORDEN_CANALES.index(c.id)] for c in mod.canales}
         res = acum.aplicar(lecturas, int(ahora))
+
+        # Persistir ANTES de publicar: lo guardado debe ser siempre >= lo
+        # publicado. Si se publicara primero y el proceso muriera antes de
+        # guardar, tras rearrancar se publicaría un total menor que el
+        # retenido y HA (total_increasing) lo sumaría entero como pico falso.
+        if res["corte"] or any(v["delta"] or v["primera"] for v in res["canales"].values()):
+            estado["modulos"][mod.id] = acum.a_dict()
+            estado_store.guardar(estado, ruta_estado)
+
         if res["corte"]:
             LOG.warning(
                 "[%s] reinicio del módulo detectado (corte de alimentación): "
@@ -83,10 +92,6 @@ async def bucle_modulo(mod, acum, pub, intervalo_s, parada, estado, ruta_estado,
                 caudal = max(0.0, (litros - prev[0]) / ((ahora - prev[1]) / 60))
             previos[c.id] = (litros, ahora)
             await pub.canal(mod.id, c.id, litros, pulsos, caudal)
-
-        if res["corte"] or any(v["delta"] or v["primera"] for v in res["canales"].values()):
-            estado["modulos"][mod.id] = acum.a_dict()
-            estado_store.guardar(estado, ruta_estado)
 
         await _esperar(parada, intervalo_s)
 

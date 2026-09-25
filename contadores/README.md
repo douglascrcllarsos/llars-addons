@@ -60,8 +60,10 @@ Cada módulo y cada canal tienen un `id` y un `nombre`:
 - **`id`** es la identidad **estable**: de él sale el `unique_id` de la
   entidad en Home Assistant y la clave con la que se guarda su acumulado en
   `/data/estado.json`. **No renombrar un `id` una vez puesto en marcha**:
-  Home Assistant lo vería como una entidad nueva y el add-on empezaría el
-  acumulado de ese canal desde cero. El `id` del módulo es libre (letras
+  Home Assistant lo vería como una entidad nueva y el add-on arrancaría el
+  acumulado de ese canal desde la lectura actual del módulo — en la
+  práctica, como una instalación nueva, que necesita su propio
+  `offset_litros`. El `id` del módulo es libre (letras
   minúsculas, dígitos y `_`, hasta 16 caracteres); el del canal viene fijado
   por el cableado físico del WJ69: `A0`-`A7` o `B0`-`B7`.
 - **`nombre`** es solo la etiqueta visible en la interfaz: se puede cambiar
@@ -82,7 +84,13 @@ offset_litros = lectura de la esfera del contador − litros que el add-on
 Hay que anotar la lectura de la esfera y el valor del sensor de litros del
 add-on **el mismo día**, y restar. Cambiar el offset después solo afecta a
 partir de ese momento: el acumulado de pulsos interno no se toca, solo se
-desplaza la lectura en litros que se publica.
+desplaza la lectura en litros que se publica. No admite valores negativos
+(la validación lo rechaza).
+
+**Corregir `offset_litros` solo al alza.** Bajarlo más adelante produce un
+pico falso en las estadísticas de Home Assistant: `total_increasing`
+interpreta la bajada como un reinicio del contador y suma el total entero
+de golpe. Si el offset quedó mal, súbelo, o asume ese pico puntual una vez.
 
 ## Entidades creadas
 
@@ -98,7 +106,7 @@ Por cada **canal** del módulo:
 | Entidad | Dominio | `device_class` / unidad | Notas |
 |---|---|---|---|
 | `<nombre del canal>` | `sensor` | `water`, litros (`L`) | Litros acumulados, `state_class: total_increasing`. |
-| `<nombre del canal> pulsos` | `sensor` | sin unidad | Diagnóstico. Pulsos brutos acumulados. |
+| `<nombre del canal> pulsos` | `sensor` | sin unidad | Diagnóstico. Pulsos brutos acumulados, `state_class: total_increasing`. |
 | `<nombre del canal> caudal` | `sensor` | `L/min` | Caudal instantáneo entre las dos últimas lecturas buenas. |
 
 Todas las entidades de un módulo comparten un mismo dispositivo en Home

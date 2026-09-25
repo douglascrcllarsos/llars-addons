@@ -43,10 +43,15 @@ def cargar(ruta: str = "/data/options.json") -> Config:
 def validar(crudo: dict) -> Config:
     modulos = []
     ids_mod = set()
+    hosts_puertos = set()
     for m in crudo.get("modulos", []):
         if m["id"] in ids_mod:
             raise ValueError(f"id de módulo repetido: {m['id']}")
         ids_mod.add(m["id"])
+        host, puerto = m["host"], int(m["puerto"])
+        if (host, puerto) in hosts_puertos:
+            raise ValueError(f"host:puerto repetido entre módulos: {host}:{puerto}")
+        hosts_puertos.add((host, puerto))
         canales = []
         ids_can = set()
         for c in m.get("canales", []):

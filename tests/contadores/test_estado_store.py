@@ -34,3 +34,15 @@ def test_version_desconocida_es_corrupto(tmp_path):
     ruta.write_text(json.dumps({"version": 99}), encoding="utf-8")
     estado, corrupto = estado_store.cargar(str(ruta))
     assert corrupto and estado["modulos"] == {}
+
+
+def test_pulsos_acum_no_entero_es_corrupto(tmp_path):
+    ruta = tmp_path / "estado.json"
+    d = {"version": 1, "modulos": {"sm": {"canales": {"A3": {"pulsos_acum": "x", "ultima_lectura": 18}}}}}
+    ruta.write_text(json.dumps(d), encoding="utf-8")
+    estado, corrupto = estado_store.cargar(str(ruta))
+    assert estado == {"version": 1, "modulos": {}}
+    assert corrupto
+    assert not ruta.exists()  # apartado, no borrado
+    apartados = list(tmp_path.glob("estado.json.corrupto-*"))
+    assert len(apartados) == 1

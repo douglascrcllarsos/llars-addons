@@ -10,7 +10,7 @@ def _cfg():
             "id": "sala", "nombre": "Sala de contadores", "host": "192.168.1.50",
             "puerto": 502, "direccion": 4,
             "canales": [
-                {"id": "A3", "nombre": "Agua fría cocina", "litros_por_pulso": 1.0, "offset_litros": 610.0},
+                {"id": "A3", "nombre": "Agua fría cocina", "litros_por_pulso": 1.0, "offset_litros": 500.0},
                 {"id": "B3", "nombre": "Agua caliente cocina", "litros_por_pulso": 1.0, "offset_litros": 0.0},
             ],
         }],
