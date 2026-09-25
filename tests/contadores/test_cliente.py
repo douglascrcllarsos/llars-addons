@@ -74,7 +74,7 @@ def test_reconecta_tras_caida():
         await reader.read(64)
         writer.write(resp)
         await writer.drain()
-        writer.close()
+        writer.close()  # cierra para que wait_closed() no cuelgue esperando al peer
 
     asyncio.run(caso())
 
@@ -84,5 +84,25 @@ def test_puerto_cerrado_lanza():
         cli = ClienteDR134("127.0.0.1", 1, timeout_s=0.5)
         with pytest.raises(ErrorConexion):
             await cli.consultar(b"x", 8)
+
+    asyncio.run(caso())
+
+
+def test_eof_a_mitad_de_trama_lanza():
+    async def caso():
+        async def maneja(reader, writer):
+            await reader.read(64)
+            writer.write(b"\x01\x03")  # menos bytes de los pedidos
+            await writer.drain()
+            writer.close()
+
+        srv = await asyncio.start_server(maneja, "127.0.0.1", 0)
+        puerto = srv.sockets[0].getsockname()[1]
+        cli = ClienteDR134("127.0.0.1", puerto, timeout_s=1.0)
+        with pytest.raises(ErrorConexion):
+            await cli.consultar(b"peticion", 8)
+        assert not cli.conectado
+        srv.close()
+        await srv.wait_closed()
 
     asyncio.run(caso())
