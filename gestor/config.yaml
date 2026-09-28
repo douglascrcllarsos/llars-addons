@@ -1,5 +1,5 @@
 name: Llars Control
-version: "0.9.0"
+version: "0.9.1"
 slug: gestor
 image: "ghcr.io/douglascrcllarsos/llars-control-{arch}"
 description: Aerotermia Samsung (NASA), motor de clima y gestión de la instalación
@@ -25,14 +25,7 @@ options:
   modulo_aerotermia: false
   motor_clima: false
   modulo_watchdog: false
-  alias: "EHS principal"
-  conexion:
-    tipo: tcp
-    host: ""
-    puerto: 8899
-    dispositivo: ""
   sondeo_activo_s: 10
-  acs_instalado: false
   controles_cliente:
     onoff: false
     modo: false
@@ -46,14 +39,7 @@ schema:
   modulo_aerotermia: bool
   motor_clima: bool
   modulo_watchdog: bool
-  alias: str
-  conexion:
-    tipo: list(tcp|serie)
-    host: str?
-    puerto: port
-    dispositivo: str?
   sondeo_activo_s: int(5,3600)
-  acs_instalado: bool
   controles_cliente:
     onoff: bool
     modo: bool

@@ -5,6 +5,12 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.9.1 — 2026-09-28
+
+### Cambiado
+- Selector de máquina nuevo, a la izquierda de las secciones (Panel, Puesta en marcha, Registro, Avanzado): un botón con el nombre de la máquina y un punto de estado (verde conectada, gris sin conexión, rojo con protección o avería) que abre una lista propia con solo los nombres. Sustituye al desplegable del navegador, que salía con fondo blanco y sin las opciones visibles. Sigue oculto con una sola máquina.
+- Las opciones del add-on ya no piden `alias`, `conexion` ni `acs_instalado` sueltos: con varias máquinas basta la lista `maquinas`. Una instalación que aún los tenga guardados sigue funcionando (el Supervisor los aparta con un aviso y el add-on los lee si están); con el módulo de aerotermia activo y sin lista, el add-on no arranca y lo dice.
+
 ## 0.9.0 — 2026-09-28
 
 ### Añadido
