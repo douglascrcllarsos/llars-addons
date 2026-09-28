@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.9.2 — 2026-09-28
+
+### Arreglado
+- El selector de máquina no se desplegaba: la lista colgaba de la barra de secciones, que recorta lo que se sale de ella (`overflow-x: auto`), así que se abría pero quedaba oculta. Ahora la lista cuelga del navbar y se coloca bajo el botón.
+
 ## 0.9.1 — 2026-09-28
 
 ### Cambiado
