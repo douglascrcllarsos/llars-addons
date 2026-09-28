@@ -5,6 +5,16 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.9.0 — 2026-09-28
+
+### Añadido
+- Varias aerotermias en un mismo add-on: lista `maquinas` en las opciones (alias, conexión y si tiene ACS por máquina). Cada una tiene su cliente NASA, su registro, su dispositivo en Home Assistant y su panel; selector de máquina en la barra superior (oculto con una sola). En el selector, un punto marca la máquina con protección o avería activa o desconectada.
+- Rutas `/api/m/<id>/...` por máquina; `/api/estado` lista las máquinas con su estado.
+
+### Cambiado
+- Las instalaciones con una sola máquina no cambian nada: sin lista, se construye con los campos `alias`/`conexion`/`acs_instalado` de siempre, y la primera máquina de la lista conserva los identificadores de hoy en HA, MQTT, API y datos.
+- Al quitar una máquina de la lista, su discovery retenido se borra del broker en el siguiente arranque.
+
 ## 0.8.0 — 2026-09-25
 
 ### Añadido
