@@ -5,6 +5,17 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.10.0 — 2026-09-29
+
+### Añadido
+- Módulo **VMC** (`modulo_vmc`): controla una VMC de doble flujo ALDES InspirAIR Side 250 por Modbus RTU (conversor USR-DR134/DR164 o serie 8N1). El add-on fuerza siempre el modo Manual de la máquina y decide él la velocidad por CO₂ con dos umbrales del cliente y una histéresis técnica; el estado deseado (encendida, bypass, umbrales, histéresis, velocidad) se guarda y la máquina se corrige en cada ciclo si alguien la cambia desde la pantalla.
+- Entidades en Home Assistant bajo el dispositivo «VMC»: CO₂, humedad y cuatro temperaturas de aire, velocidad, modo de decisión, días de filtro, fallos, conexión; mandos del cliente: encendida, bypass (freecooling) y los dos umbrales de CO₂; y un **esquema animado** de la máquina como entidad de imagen (SVG por MQTT) para la tarjeta del dashboard.
+- Panel técnico: módulo «VMC» con esquema en vivo, control del cliente, mandos técnicos (velocidad por CO₂ o fija, histéresis, puesta a cero del filtro), estado, temperaturas, comunicaciones y registro de eventos propio.
+- `sim/vmc_sim.py`: simulador de la VMC para el banco.
+
+### Cambiado
+- `RegistroMaquina` admite un juego de tipos propio; el transporte serie admite la paridad como parámetro.
+
 ## 0.9.2 — 2026-09-28
 
 ### Arreglado
