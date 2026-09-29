@@ -5,6 +5,12 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.10.1 — 2026-09-29
+
+### Cambiado
+- **Freecooling automático en la VMC.** El interruptor «Bypass (freecooling)» pasa a llamarse «Freecooling» y ya no fuerza la válvula: es un modo. Con el modo activo el add-on abre el bypass cuando el aire fresco está «delta» °C por debajo del retorno (5 °C por defecto) y lo cierra cuando el aire fresco sube más de «histéresis» °C por encima de ese límite (1 °C por defecto); con el modo apagado el bypass se mantiene cerrado. Delta e histéresis son mandos técnicos del panel. La válvula real se ve en el nuevo sensor binario «Bypass abierto». El `entity_id` del interruptor se conserva.
+- El registro anota cada apertura o cierre automático del bypass con las temperaturas y el umbral aplicado.
+
 ## 0.10.0 — 2026-09-29
 
 ### Añadido
