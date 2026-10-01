@@ -53,6 +53,32 @@ intervalo_s: 30                    # cada cuántos segundos se sondea cada módu
 
 Puede haber varios módulos, cada uno con sus propios canales.
 
+### Varios módulos en el mismo conversor
+
+Si dos o más WJ69 comparten bus RS-485 y cuelgan del mismo USR-DR134, se
+declaran como módulos distintos con el mismo `host` y `puerto` y cada uno
+con su `direccion` Modbus:
+
+```yaml
+modulos:
+  - id: sur_a
+    nombre: "Contador Sur A"
+    host: 192.168.1.50
+    puerto: 502
+    direccion: 3
+    canales: [...]
+  - id: sur_b
+    nombre: "Contador Sur B"
+    host: 192.168.1.50            # mismo conversor
+    puerto: 502
+    direccion: 2                  # otra dirección Modbus
+    canales: [...]
+```
+
+El add-on abre una sola conexión por conversor y consulta sus módulos uno
+detrás de otro. No se puede repetir la misma `direccion` en el mismo
+conversor (la validación lo rechaza).
+
 ### `id` frente a `nombre`
 
 Cada módulo y cada canal tienen un `id` y un `nombre`:

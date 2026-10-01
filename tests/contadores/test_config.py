@@ -39,7 +39,7 @@ def test_sin_modulos_es_valido():
     "romper, texto",
     [
         (lambda d: d["modulos"].append(dict(d["modulos"][0])), "repetido"),
-        (lambda d: d["modulos"].append(dict(d["modulos"][0], id="sala2")), "host:puerto"),
+        (lambda d: d["modulos"].append(dict(d["modulos"][0], id="sala2")), "dirección 7 repetida"),
         (lambda d: d["modulos"][0]["canales"][0].update(id="C9"), "desconocido"),
         (lambda d: d["modulos"][0]["canales"].append(dict(d["modulos"][0]["canales"][0])), "repetido"),
         (lambda d: d["modulos"][0]["canales"][0].update(litros_por_pulso=0), "litros_por_pulso"),
@@ -51,6 +51,22 @@ def test_config_invalida(romper, texto):
     romper(d)
     with pytest.raises(ValueError, match=texto):
         config.validar(d)
+
+
+def test_dos_modulos_en_el_mismo_conversor_con_distinta_direccion():
+    d = _crudo()
+    d["modulos"].append(dict(d["modulos"][0], id="sala2", direccion=8))
+    cfg = config.validar(d)
+    assert [(m.id, m.host, m.puerto, m.direccion) for m in cfg.modulos] == [
+        ("sala", "192.168.1.50", 502, 7),
+        ("sala2", "192.168.1.50", 502, 8),
+    ]
+
+
+def test_misma_direccion_en_conversores_distintos_es_valida():
+    d = _crudo()
+    d["modulos"].append(dict(d["modulos"][0], id="sala2", host="192.168.1.51"))
+    assert len(config.validar(d).modulos) == 2
 
 
 def test_offset_opcional_a_cero():

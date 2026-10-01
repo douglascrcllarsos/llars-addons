@@ -43,15 +43,15 @@ def cargar(ruta: str = "/data/options.json") -> Config:
 def validar(crudo: dict) -> Config:
     modulos = []
     ids_mod = set()
-    hosts_puertos = set()
+    direcciones = set()  # (host, puerto, dirección): varios módulos pueden compartir conversor
     for m in crudo.get("modulos", []):
         if m["id"] in ids_mod:
             raise ValueError(f"id de módulo repetido: {m['id']}")
         ids_mod.add(m["id"])
-        host, puerto = m["host"], int(m["puerto"])
-        if (host, puerto) in hosts_puertos:
-            raise ValueError(f"host:puerto repetido entre módulos: {host}:{puerto}")
-        hosts_puertos.add((host, puerto))
+        host, puerto, direccion = m["host"], int(m["puerto"]), int(m["direccion"])
+        if (host, puerto, direccion) in direcciones:
+            raise ValueError(f"dirección {direccion} repetida en el conversor {host}:{puerto}")
+        direcciones.add((host, puerto, direccion))
         canales = []
         ids_can = set()
         for c in m.get("canales", []):
@@ -68,6 +68,6 @@ def validar(crudo: dict) -> Config:
                 raise ValueError(f"offset_litros no puede ser negativo ({m['id']}/{c['id']})")
             canales.append(Canal(c["id"], c["nombre"], lpp, off))
         modulos.append(
-            Modulo(m["id"], m["nombre"], m["host"], int(m["puerto"]), int(m["direccion"]), tuple(canales))
+            Modulo(m["id"], m["nombre"], host, puerto, direccion, tuple(canales))
         )
     return Config(tuple(modulos), int(crudo.get("intervalo_s", 30)))

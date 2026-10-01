@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 — 2026-10-01
+
+Varios módulos WJ69 pueden colgar del mismo conversor USR-DR134: basta con
+declararlos con el mismo `host` y `puerto` y distinta `direccion`. El add-on
+abre una sola conexión por conversor y consulta sus módulos en serie, con un
+breve silencio entre tramas. Antes se rechazaba el `host:puerto` repetido;
+ahora solo se rechaza repetir la misma dirección en el mismo conversor.
 
 ## 0.1.1 — 2026-09-25
 

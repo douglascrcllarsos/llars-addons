@@ -104,3 +104,59 @@ def test_fallos_repetidos_marcan_desconectado(tmp_path):
     estado = {"version": 1, "modulos": {}}
     pub = _correr([None, None, None], acum, estado, tmp_path)
     assert ("conexion", "sala", False) in pub.eventos
+
+
+def test_dos_modulos_comparten_conversor_sin_pisarse(tmp_path, monkeypatch):
+    # Un "DR134" fake con dos WJ69 en su bus (dir. 2 y 3). Como el real,
+    # reenvía cada respuesta del bus a TODOS sus clientes TCP: con una
+    # conexión por módulo, cada uno recibiría también la trama del otro.
+    contadores = {2: [20 + k for k in range(16)], 3: [30 + k for k in range(16)]}
+    escritores = []
+
+    async def maneja(reader, writer):
+        escritores.append(writer)
+        while True:
+            pet = await reader.read(64)
+            if not pet:
+                break
+            await asyncio.sleep(0.01)  # lo que tarda el módulo en contestar
+            datos = b"".join(
+                (v & 0xFFFF).to_bytes(2, "big") + (v >> 16).to_bytes(2, "big")
+                for v in contadores[pet[0]])
+            cuerpo = bytes([pet[0], 0x03, len(datos)]) + datos
+            trama = cuerpo + modbus.crc16(cuerpo).to_bytes(2, "little")
+            for w in escritores:
+                w.write(trama)
+        writer.close()
+
+    pub = PubFake()
+    estado = {"version": 1, "modulos": {}}
+    monkeypatch.setattr(main, "RUTA_ESTADO", str(tmp_path / "estado.json"))
+
+    async def caso():
+        srv = await asyncio.start_server(maneja, "127.0.0.1", 0)
+        puerto = srv.sockets[0].getsockname()[1]
+        canal = {"id": "A0", "nombre": "Fría", "litros_por_pulso": 1.0}
+        cfg = config.validar({
+            "modulos": [
+                {"id": "sur_b", "nombre": "Sur B", "host": "127.0.0.1", "puerto": puerto,
+                 "direccion": 2, "canales": [canal]},
+                {"id": "sur_a", "nombre": "Sur A", "host": "127.0.0.1", "puerto": puerto,
+                 "direccion": 3, "canales": [canal]},
+            ],
+            "intervalo_s": 5,
+        })
+        acums = {m.id: Acumulador() for m in cfg.modulos}
+        parada = asyncio.Event()
+        tarea = asyncio.create_task(main._correr_modulos(cfg, acums, pub, parada, estado))
+        await asyncio.sleep(0.4)
+        parada.set()
+        await tarea
+        srv.close()
+
+    asyncio.run(caso())
+    assert len(escritores) == 1  # una sola conexión TCP al conversor
+    canales = {(e[1], e[2]): e[4] for e in pub.eventos if e[0] == "canal"}
+    assert canales == {("sur_b", "A0"): 20, ("sur_a", "A0"): 30}
+    assert ("conexion", "sur_b", True) in pub.eventos
+    assert ("conexion", "sur_a", True) in pub.eventos

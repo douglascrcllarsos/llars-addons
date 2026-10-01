@@ -1,6 +1,7 @@
 """Llars Contadores — lectura de WJ69-485 vía DR134 y publicación MQTT.
 
-Un bucle asyncio por módulo. La lógica delicada vive en modbus.py y
+Un bucle asyncio por módulo y una conexión por conversor (compartida entre
+los módulos que cuelgan de él). La lógica delicada vive en modbus.py y
 acumulador.py (puros); aquí solo se orquesta.
 """
 import asyncio
@@ -97,9 +98,16 @@ async def bucle_modulo(mod, acum, pub, intervalo_s, parada, estado, ruta_estado,
 
 
 async def _correr_modulos(cfg, acums, pub, parada, estado):
+    # Un cliente por conversor: los módulos que comparten DR134 comparten
+    # conexión y se turnan en el bus (ver cliente.py).
+    clientes: dict[tuple[str, int], ClienteDR134] = {}
+    for m in cfg.modulos:
+        if (m.host, m.puerto) not in clientes:
+            clientes[(m.host, m.puerto)] = ClienteDR134(m.host, m.puerto)
     tareas = [
         asyncio.create_task(
-            bucle_modulo(m, acums[m.id], pub, cfg.intervalo_s, parada, estado, RUTA_ESTADO),
+            bucle_modulo(m, acums[m.id], pub, cfg.intervalo_s, parada, estado, RUTA_ESTADO,
+                         cliente=clientes[(m.host, m.puerto)]),
             name=f"modulo-{m.id}")
         for m in cfg.modulos
     ]
