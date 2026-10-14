@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.11.0 — 2026-10-14
+
+### Añadido
+- **Relés por modo en el motor de clima** (`global.relays.por_modo` en `termostatos.yaml`, opcional). Los relés de la lista `calentar` (o `enfriar`) están en ON si ese selector está en `on`, y en OFF en cualquier otro caso. No dependen de la demanda ni de las climatizaciones por aire o suelo, y si el selector está caído no se tocan; con los dos selectores en `on`, manda Calentar. Pensado para válvulas de cambio de temporada (primer caso: Blasco). La validación rechaza bloques mal formados y relés que ya mande el motor por otra vía, incluidos los miembros de sus helpers de grupo. El mapeador aún no lo muestra, pero lo conserva al guardar. Detalles en DOCS.md.
+
 ## 0.10.1 — 2026-09-29
 
 ### Cambiado
