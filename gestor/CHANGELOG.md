@@ -5,6 +5,28 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.12.0 — 2026-10-16
+
+### Cambiado
+- **Clima: cuatro pestañas.** El módulo Clima pasa a tener Panel · Mapeador · Registro · Watchdog. El mapeador («Configuración de zonas») y el Registro de acciones salen del Panel a pestañas propias; desaparece el conmutador Estado/Registro.
+- Al salir del Mapeador con cambios sin guardar (a otra pestaña, a otro módulo o cerrando la página) sale un aviso para volver o descartar. La pestaña lleva un punto ámbar mientras haya cambios.
+- **Clima · Panel:** el Estado del motor pasa a tener tres vistas. **Resumen:** una tabla con una fila por zona (temperatura, consigna, modo, demanda y el estado de cada relé). **Actuadores:** los relés en tarjetas, agrupados por zona, por rol o por dispositivo, con el deslizador OFF · AUTO · ON para forzarlos y «liberar todos». **Termostatos:** consigna, modo y velocidad del ventilador de cada zona. Desaparecen las tarjetas de zona, el bloque de aerotermia y bombas y el mini-registro.
+- El relé de baño se pinta con un váter en gris claro (antes una bañera rosa).
+- **Relés por modo clima** (`relays.por_modo`): en Actuadores salen en su propia tarjeta, después de aerotermia y bombas, con el deslizador para forzarlos como cualquier otro relé.
+- **Mapeador de Clima v2.** El tablero de cables se sustituye por dos paneles: a la izquierda la zona (con un selector de zona con buscador, «+ nueva zona» al final de la lista y la papelera) y a la derecha los dispositivos de Home Assistant, con los conectados a la zona primero y el resto plegado tras «mostrar otros». Se conecta tocando un puerto y después un canal. Siempre editable: Guardar y Cancelar aparecen solo con cambios. El control de aerotermia y bombas, con el Avanzado, está en la opción «G» del selector. Cada canal lleva el deslizador OFF · AUTO · ON y «recargar» vuelve a leer los dispositivos de HA.
+- Fuera del mapeador: el zoom y la pantalla completa, el modo lectura con «Editar», el modal «+ Actuador» y el dial del termostato (los termostatos se manejan en la vista Termostatos del Panel).
+
+### Añadido
+- Los termostatos que lo admiten se pueden poner en «Solo ventilador» (termostato de pared) o «Automático» (Aqara) desde el panel, y el ventilador en velocidad automática si el termostato la anuncia. El motor sigue tratando esos dos modos como sin demanda.
+- `tools/panel_clima_demo.py`: servidor de demostración del panel de Clima sin Home Assistant, para desarrollo.
+- **Zonas deshabilitadas.** Se puede guardar con conflictos (falta el termostato, el suelo, la válvula, la humedad con suelo frío, alguna velocidad, el selector de velocidades o el sensor de válvula elegidos, o un relé compartido con otra zona que no es baño, con la aerotermia, con una bomba o con los relés por modo). Esas zonas se guardan con `habilitada: false` y un comentario con lo que les falta; el motor no las evalúa ni toca sus relés hasta que se corrigen y se vuelve a guardar. La validación las lista. **Ojo al actualizar:** una zona que hoy funciona pero tiene suelo · frío sin sensor de humedad cuenta como conflicto, así que el primer guardado desde el Visual la deshabilita (sale el aviso con la lista antes de guardar). Revisar esas zonas antes de guardar.
+- **Relés por modo clima en el mapeador.** La G se ordena en tres grupos: Aerotermia, Bombas y Relés por modo clima, con dos puertos opcionales (Calentar y Enfriar) para el bloque `relays.por_modo`. Un mismo relé puede ir a los dos. Si el bloque del YAML está mal escrito, los puertos salen bloqueados y el bloque se conserva tal cual.
+- `tools/clima_ui_demo.py`: el panel real con un Home Assistant simulado para mirar la UI de Clima sin banco.
+
+### Arreglado
+- El Watchdog ya no falla al leer una zona sin termostato.
+- La validación ya no da «dos dueños» entre un relé de `relays.por_modo` y una zona deshabilitada.
+
 ## 0.11.0 — 2026-10-14
 
 ### Añadido
