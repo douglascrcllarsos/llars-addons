@@ -5,6 +5,15 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.13.0 — 2026-10-16
+
+### Añadido
+- **Corrección del CO₂ de la VMC por dos puntos.** En el panel técnico (Mandos técnicos → Corrección del CO₂, bloque plegable) se introducen dos parejas *lectura de la VMC → medidor de referencia* y el add-on corrige el CO₂ con la recta entre ellas, sin bajar nunca de 400 ppm. Con la corrección activa, el control de velocidad, el esquema y la nueva entidad «CO₂ retorno corregido» usan el valor corregido. Se rechazan calibraciones incoherentes y viene desactivada, con puntos neutros. Cada cambio queda en el registro como orden de técnico.
+
+### Cambiado
+- La entidad «CO₂ retorno» pasa a diagnóstico y sigue publicando lo que mide el sensor, sin corregir; conserva su `entity_id` y su histórico.
+- En el esquema de la VMC, la caja «Retorno» muestra los ppm en grande y la temperatura y la humedad en la línea pequeña.
+
 ## 0.12.0 — 2026-10-16
 
 ### Cambiado
