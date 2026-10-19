@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.13.1 — 2026-10-19
+
+### Corregido
+- **Aerotermia con varias máquinas: los controles del Panel eran siempre de la misma máquina.** La sección Control (y Puesta en marcha) se cargaba una sola vez al abrir la página y no se recargaba al cambiar de máquina, así que se veían y se movían los valores de otra; además, los cambios sin aplicar seguían marcados al pasar a otra máquina y «Aplicar» los escribía en la que estuviera elegida. Ahora los controles se recargan al cambiar de máquina, al abrir la página salen los de la máquina guardada y, si hay cambios sin aplicar, se pide confirmación y se descartan antes de cambiar.
+
 ## 0.13.0 — 2026-10-16
 
 ### Añadido
