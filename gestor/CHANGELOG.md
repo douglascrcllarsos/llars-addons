@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.13.2 — 2026-10-27
+
+### Corregido
+- **Clima: tras un corte de luz los relés podían quedarse apagados mientras Home Assistant los daba por encendidos** (issue #4, Pirineos 27/10). El motor solo mandaba una orden si Home Assistant decía un estado distinto del deseado, así que un relé que arrancaba apagado tras el corte no se corregía nunca. Ahora el motor vuelve a mandar a cada relé su estado deseado aunque Home Assistant diga que ya lo tiene: 2 minutos después de arrancar, cada 10 minutos (ajustable en Mapeador → G → Avanzado → «Reafirmar relés cada», `proteccion.reafirmar_min`; 0 = solo al arrancar) y, al momento, cuando un relé vuelve de «no disponible». A los relés forzados desde el panel se les reenvía su estado forzado; los caídos y los que están en mitad de un impulso de fancoil se saltan; los modos de los termostatos no se tocan. Cada pasada deja una sola línea en el Registro («reafirmados N relés»).
+
 ## 0.13.1 — 2026-10-19
 
 ### Corregido
