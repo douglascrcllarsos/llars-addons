@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.13.3 — 2026-10-30
+
+### Cambiado
+- **Clima: cambiar de frío a calor (o viceversa) ya no toca los termostatos.** Antes, al cambiar Calentar, Enfriar o la climatización por aire o por suelo, el motor ponía todos los termostatos en calor o frío, o los apagaba, y encendía los que el cliente tenía apagados. Ahora cada termostato se queda como está. **Ojo al actualizar:** un termostato que sigue en calor con el sistema en frío (o al revés) no genera demanda hasta que se cambia a mano.
+
 ## 0.13.2 — 2026-10-27
 
 ### Corregido
