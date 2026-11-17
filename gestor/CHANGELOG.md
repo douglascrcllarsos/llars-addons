@@ -5,6 +5,16 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.14.0 — 2026-11-17
+
+### Añadido
+- **Clima: velocidad del fancoil por un dimmer 0-10 V.** Nueva opción `velocidad_fancoil.dimmer` (`entidad: light.…`, `niveles: {low, medium, high}` en %, por defecto 33/66/100) como alternativa a los tres relés de velocidad. Sin demanda, o con la climatización por aire apagada, el dimmer se apaga (0 V); con demanda va al % de la velocidad del termostato (o de `auto`). Mismas protecciones que los relés (caídos, rate limit, reafirmación tras un corte, registro). El impulso de fancoil no actúa sobre dimmers. En el Mapeador: «Salida de las velocidades → Un dimmer 0-10 V», con los tres % y un puerto Dimmer que solo acepta luces. Caso de origen: Federico Llinars.
+- **Clima: fancoil multizona.** Nueva opción de zona `fancoil_multizona: true` para un fancoil con varias zonas y una sola válvula: la válvula se abre si cualquiera de sus zonas pide aire. Solo se agrupa si todas las zonas que comparten la válvula lo tienen marcado; en el Mapeador es una casilla por zona, y una válvula compartida con alguna zona sin marcar sigue siendo conflicto.
+- El panel de dispositivos del Mapeador lista también las `light.` (para los dimmers).
+
+### Corregido
+- **Clima: una válvula de fancoil en varias zonas se cerraba (o abría y cerraba sin parar) aunque una de ellas pidiera aire.** Las órdenes de apagar de las zonas sin demanda iban detrás de la de encender. Con `fancoil_multizona` en todas esas zonas ya no pasa. Sin la marca se mantiene el comportamiento anterior y la validación avisa (aviso, no error, para no dejar sin arrancar un motor con un YAML escrito a mano).
+
 ## 0.13.3 — 2026-10-30
 
 ### Cambiado
