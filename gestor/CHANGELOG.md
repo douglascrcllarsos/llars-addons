@@ -5,6 +5,16 @@ Todos los cambios notables en este proyecto están documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
 
+## 0.15.0 — 2026-11-19
+
+### Añadido
+- **Clima: el dimmer de velocidad en Resumen y Actuadores.** En el Resumen, junto a la válvula, el icono de la velocidad (1, 2 o 3 rayas; la aguja si el % no es un nivel) con el % al lado. En Actuadores, la fila «Dimmer» con su estado real («Media · 66 %») y un desplegable Auto · Apagado · Baja · Media · Alta · Manual; en Manual se escribe el % (0-100) y se aplica con Intro o al salir de la casilla. El mismo desplegable sale en la lista de dispositivos del Mapeador, con el % en lugar de ON/OFF. Forzarlo no toca la válvula, que es otro actuador. Maqueta: `docs/mockup/dimmer-panel.html`.
+- `api/clima/forzar` acepta dimmers (`light.`) con `brillo_pct` (0-100; ON sin % = 100 %); el forzado guarda el % y la reafirmación tras un corte lo vuelve a mandar. `api/clima/overrides` devuelve `brillos` y `api/clima/entidades` el `brillo` de cada `light.`.
+
+### Corregido
+- El chip «N forzados · liberar todos» había perdido su estilo con el mapeador v2 y salía como un botón gris; vuelve a ser ámbar.
+- La lista de dispositivos (Mapeador y Actuadores por dispositivo) ya no enseña los `switch.` con «backlight» en el nombre (luz de fondo del relé Zigbee, no es un relé físico) ni, en un dimmer, sus `switch.` de ajustes («Do not disturb»…): de un dispositivo con `light.` solo salen sus `light.`.
+
 ## 0.14.0 — 2026-11-17
 
 ### Añadido
